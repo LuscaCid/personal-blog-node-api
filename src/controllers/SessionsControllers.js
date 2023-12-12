@@ -7,12 +7,12 @@ class SessionsControllers{
     
     login = async (request, response) => {
         const {email, password} = request.body
-        
+        console.log('chegou')
         let userInApp = null
         try {
             if(email)userInApp = await knex('users').where({email}).first()
         if(!userInApp)throw new AppError('E-mail ou senha inválidos', 401)
-        
+         
         const dbPassword = userInApp.password
         const checkPassword = await compare( password, dbPassword)
         if(!checkPassword)throw new AppError('E-mail ou senha inválidos', 401)
