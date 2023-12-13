@@ -9,7 +9,7 @@ class CommentsControllers{
     const {content} = request.body
 
     const thisPostsExists = await knex('posts')
-    .where({id : post_id})
+    .where({post_id})
     .first()
     .then((data) => {
       console.log('finder success')

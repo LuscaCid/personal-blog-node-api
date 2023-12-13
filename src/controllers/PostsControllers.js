@@ -193,16 +193,21 @@ class PostsControllers{
     .catch(e => console.error(e))
 
     const allCommentsInPost = await knex('comments as c')
-    .select(["content", "name"])
+    .select(["content", "name", "users.id"])
     .where({post_id : postInfoAndId.post_id})
     .innerJoin('users', "c.created_by", "users.id")
     .orderBy('content')
 
-    
+    const userData = await knex('posts')
+    .select(['id','name', "username", "avatar"])
+    .where({post_id})
+    .innerJoin('users', 'users.id', 'posts.user_id')
+    .first()
     const structuredPostToRender = {
       ...postInfoAndId,
       allPostTags,
-      allCommentsInPost 
+      allCommentsInPost,
+      userData
     }
     console.log(structuredPostToRender)
 

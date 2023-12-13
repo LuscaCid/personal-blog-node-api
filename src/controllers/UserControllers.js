@@ -4,7 +4,7 @@ const {hash, compare} = require('bcryptjs')
 class UserControllers{
 
     update = async (request, response) => {
-        const {biography, newName, newUsername, newEmail} = request.body
+        const {biography, newName, newUsername, newEmail, oldPassword, newPassword} = request.body
         const user_id = request.user.id
         if(biography){
             try{
@@ -61,8 +61,35 @@ class UserControllers{
                 throw new AppError(`${error.message}`, 401)
             }
         }
+
+        if(newPassword && oldPassword){
+            const user = await knex('users')
+            .where({id : user_id})
+            .first()
+
+            const hashedPassword = user.password
+            const checkOldPasswordAndActual = await compare (user.password, oldPassword )
+
+            if(!checkOldPasswordAndActual)throw new AppError('As senhas diferem')
+
+            const hashPassword = await hash(newPassword, 8)
+
+            await knex('users')
+            .where({id : user_id})
+            .update({
+                password : hashPassword
+            })
+            .then(()=> console.log('updated with success'))
+            .catch(e => console.error(e))
+
+        }
+
+
         return response.json({message : "Atualizado com sucesso!"})
 
+
+
     }
+
 }
 module.exports = UserControllers

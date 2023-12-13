@@ -76,14 +76,19 @@ class FollowersControllers{
     const user_id = request.user.id
 
     const followers = await knex('users_followers')
-    .count('* as total_followers')
     .where({following_id : user_id})
-    .first()
+
     const following = await knex('users_followers')
-    .count('* as total_following')
     .where({follower_id : user_id})
-    .first()
-    return response.json({followers, following})
+  
+    const userCountPosts = await knex('posts')
+    .where({user_id})
+    
+    
+    const data = {followers, following, userCountPosts  }
+    
+    console.log(data)
+    return response.json(data)
   }
 
   listInfoFollowers = async (request, response) => {
